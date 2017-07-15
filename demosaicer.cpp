@@ -4,6 +4,7 @@
 #include <opencv2/cudaarithm.hpp>
 #include <opencv2/cudaimgproc.hpp>
 #include <stdio.h>
+#include <unistd.h>
 
 using namespace std;
 
@@ -14,16 +15,13 @@ cv::Mat load_raw(const char *fname, int size)
 {
 	uchar* raw_data;
 	FILE *fp;
-	int i;
 
 	raw_data = (uchar *)malloc(size);
 
-	fp = fopen(fname, "rb");
-	if (fp != NULL) {
-		for (i = 0; i < size; i++) {
-			raw_data[i] = getc(fp);
-		}
-	}
+	fp = (fname ? fopen(fname, "rb") : stdin);
+
+	fread(raw_data, IMG_H, IMG_W*2, fp);
+
 	fclose(fp);
 	cv::Mat im(IMG_H, IMG_W, CV_16UC1, raw_data);
 
